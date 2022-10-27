@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        ws = new WebSocket("ws://192.168.0.16:10117");
+        ws = new WebSocket("ws://192.168.0.14:10117");
         ws.Connect();
         ws.OnMessage += (sender, e) =>
         {
