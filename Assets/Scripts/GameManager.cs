@@ -1,11 +1,13 @@
+using SocketIOClient;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using WebSocketSharp;
 
 public class GameManager : MonoBehaviour
 {
-    WebSocket ws;
+    EnvManager environment;
+    SocketIOUnity socket;
     public static GameManager _GameManager { get; private set; }
     // Start is called before the first frame update
     void Awake()
@@ -21,26 +23,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    void Start()
     {
-        ws = new WebSocket("ws://10.0.0.35:10117");
-        ws.Connect();
-        ws.OnMessage += (sender, e) =>
+        environment = GameObject.Find("EnvManager").GetComponent<EnvManager>();
+        var uri = new Uri("ws://" + environment.localIP + ":10117");
+        socket = new SocketIOUnity(uri, new SocketIOOptions
         {
-            Debug.Log("Message Received from " + ((WebSocket)sender).Url + ", Data : " + e.Data);
-        };
+            Query = new Dictionary<string, string>
+        {
+            {"token", "UNITY" }
+        }
+            ,
+            Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
+        });
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (ws == null)
+        // To test socket emit
+        if (socket == null)
         {
             return;
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ws.Send("Hello");
+            socket.Emit("Opmessage", "Hello from GameManager");
         }
     }
 }
