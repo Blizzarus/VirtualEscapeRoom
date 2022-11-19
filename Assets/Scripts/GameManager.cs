@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         environment = GameObject.Find("EnvManager").GetComponent<EnvManager>();
-        var uri = new Uri("ws://" + environment.localIP + ":10117");
+        var uri = new Uri("http://localhost:8080");
         socket = new SocketIOUnity(uri, new SocketIOOptions
         {
             Query = new Dictionary<string, string>
@@ -36,6 +36,34 @@ public class GameManager : MonoBehaviour
             ,
             Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
         });
+
+        socket.OnConnected += (sender, e) =>
+        {
+            Debug.Log("socket.OnConnected");
+        };
+        socket.OnPing += (sender, e) =>
+        {
+            //Debug.Log("Ping");
+        };
+        socket.OnPong += (sender, e) =>
+        {
+            //Debug.Log("Pong: " + e.TotalMilliseconds);
+        };
+        socket.OnDisconnected += (sender, e) =>
+        {
+            Debug.Log("disconnect: " + e);
+        };
+        socket.OnReconnectAttempt += (sender, e) =>
+        {
+            Debug.Log($"{DateTime.Now} Reconnecting: attempt = {e}");
+        };
+        socket.On("test", (response) =>
+        {
+            Debug.Log(response.ToString());
+        });
+
+        Debug.Log("Connecting...");
+        socket.Connect();
     }
 
     // Update is called once per frame
@@ -48,7 +76,7 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            socket.Emit("Opmessage", "Hello from GameManager");
+            socket.Emit("test", "Hello from GameManager!");
         }
     }
 }
