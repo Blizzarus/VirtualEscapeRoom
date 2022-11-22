@@ -2,14 +2,17 @@ using SocketIOClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     EnvManager environment;
     SocketIOUnity socket;
+    public string gamestate;
+    public List<string> completors;
     public static GameManager _GameManager { get; private set; }
-    // Start is called before the first frame update
+
     void Awake()
     {
         if(_GameManager == null)
@@ -26,6 +29,13 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         environment = GameObject.Find("EnvManager").GetComponent<EnvManager>();
+        completors = new List<string>();
+        gamestate = "puzzle1";
+        setupSocketIOClient();
+    }
+
+    void setupSocketIOClient()
+    {
         var uri = new Uri("http://localhost:8080");
         socket = new SocketIOUnity(uri, new SocketIOOptions
         {
@@ -39,7 +49,7 @@ public class GameManager : MonoBehaviour
 
         socket.OnConnected += (sender, e) =>
         {
-            Debug.Log("socket.OnConnected");
+            Debug.Log("Socket Connected!");
         };
         socket.OnPing += (sender, e) =>
         {
@@ -51,32 +61,94 @@ public class GameManager : MonoBehaviour
         };
         socket.OnDisconnected += (sender, e) =>
         {
-            Debug.Log("disconnect: " + e);
+            Debug.Log("Disconnect: " + e);
         };
         socket.OnReconnectAttempt += (sender, e) =>
         {
             Debug.Log($"{DateTime.Now} Reconnecting: attempt = {e}");
         };
-        socket.On("test", (response) =>
+
+        socket.On("requestGameState", (data) =>
         {
-            Debug.Log(response.ToString());
+            Debug.Log("Recieved gamestate request");
+            socket.Emit("requestGameState", gamestate);
         });
 
-        Debug.Log("Connecting...");
+        socket.On("solveEvent", (data) =>
+        {
+            Debug.Log("Recieved solve attempt: " + data.ToString());
+            string solveResult = solveAttempt(data);
+            socket.Emit("solveEvent", solveResult);
+        });
+
+
+        Debug.Log("Attmepting to connect...");
         socket.Connect();
     }
 
-    // Update is called once per frame
-    void Update()
+    void updateGS(string newGS)
     {
-        // To test socket emit
-        if (socket == null)
+        gamestate = newGS;
+        switch(gamestate)
         {
-            return;
+            case "waiting":
+                break;
+            case "puzzle1":
+                environment.IntroFX();
+                break;
+            case "puzzle2":
+                environment.CabinetFX();
+                break;
+            case "escape":
+                environment.SafeFX();
+                break;
+            case "completed":
+                environment.CabinetFX();
+                break;
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+        socket.Emit("updateGameState", gamestate);
+    }
+
+    string solveAttempt(SocketIOResponse data)
+    {
+        string[] splitData = Regex.Split(Regex.Replace(data.ToString(), "[][\"]", ""), "::");
+        string player = splitData[0];
+        string puzzleNumber = splitData[1];
+        string code = splitData[2];
+        Debug.Log(code);
+        switch (puzzleNumber)
         {
-            socket.Emit("test", "Hello from GameManager!");
+            case "1":
+                if (gamestate != "puzzle1") { return "Invalid puzzle attmepted.  How did you do that?!"; }
+                if (code == "test")
+                {
+                    updateGS("puzzle2");
+                    completors.Add(player);
+                    return "Success!  The lock opened!";
+                }
+                else
+                {
+                    return "The lock won't open.  Looks like that code wasn't right...";
+                }
+            case "2":
+                if (gamestate != "puzzle2") { return "Invalid puzzle attmepted.  How did you do that?!"; }
+                if (code == "123456")
+                {
+                    updateGS("escape");
+                    completors.Add(player);
+                    return "Success!  The safe opened!";
+                }
+                else
+                {
+                    return "The safe won't open.  Looks like that code wasn't right...";
+                }
+            case "3":
+                if (gamestate != "escape") { return "Escape trigged early.  How did you do that?!"; }
+                updateGS("completed");
+                return "The key worked!  You have escaped!";
+            default:
+                Debug.Log("Error: invalid puzzle number");
+                return "Error: invalid puzzle number";
         }
     }
 }

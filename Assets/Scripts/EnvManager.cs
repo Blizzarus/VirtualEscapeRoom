@@ -18,7 +18,7 @@ public class EnvManager : MonoBehaviour
             .FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
         localIP = ipAddress.ToString();
 
-        AddressText.text = "http://" + localIP + ":10118";
+        AddressText.text = "http://" + localIP + ":8080";
     }
 
     // Update is called once per frame
@@ -27,18 +27,23 @@ public class EnvManager : MonoBehaviour
         
     }
 
-    void CabinetFX()
+    public void IntroFX()
     {
-
+        // need this?
     }
 
-    void SafeFX()
+    public void CabinetFX()
     {
-
+        // animate cabinet open and play sound
     }
 
-    void DoorFX()
+    public void SafeFX()
     {
+        // animate safe open and play sound
+    }
 
+    public void DoorFX()
+    {
+        // animate key to unock door, open it, and play sound
     }
 }
