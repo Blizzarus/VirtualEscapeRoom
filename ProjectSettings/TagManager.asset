@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - EnvController
+  - AltCamera
   layers:
   - Default
   - TransparentFX

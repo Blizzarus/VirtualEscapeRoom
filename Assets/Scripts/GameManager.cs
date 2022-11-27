@@ -11,20 +11,6 @@ public class GameManager : MonoBehaviour
     SocketIOUnity socket;
     public string gamestate;
     public List<string> completors;
-    public static GameManager _GameManager { get; private set; }
-
-    void Awake()
-    {
-        if(_GameManager == null)
-        {
-            _GameManager = this;
-            DontDestroyOnLoad(this);
-        }
-        else
-        {
-            Destroy(this);
-        }
-    }
 
     void Start()
     {
@@ -83,10 +69,10 @@ public class GameManager : MonoBehaviour
 
 
         Debug.Log("Attmepting to connect...");
-        socket.Connect();
+        //socket.Connect();
     }
 
-    void updateGS(string newGS)
+    public void updateGS(string newGS)
     {
         gamestate = newGS;
         switch(gamestate)
@@ -94,16 +80,17 @@ public class GameManager : MonoBehaviour
             case "waiting":
                 break;
             case "puzzle1":
-                environment.IntroFX();
+                GameObject.Find("StartMenu").SetActive(false);
+                environment.Begin();
                 break;
             case "puzzle2":
-                environment.CabinetFX();
+                environment.FX(1);
                 break;
             case "escape":
-                environment.SafeFX();
+                environment.FX(2);
                 break;
             case "completed":
-                environment.CabinetFX();
+                environment.FX(3);
                 break;
         }
         socket.Emit("updateGameState", gamestate);
