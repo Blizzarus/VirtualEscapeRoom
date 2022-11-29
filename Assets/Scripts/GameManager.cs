@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
 
 
         Debug.Log("Attmepting to connect...");
-        //socket.Connect();
+        socket.Connect();
     }
 
     public void updateGS(string newGS)
