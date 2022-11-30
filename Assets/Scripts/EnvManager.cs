@@ -5,12 +5,18 @@ using System.Linq;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Timers;
+using System;
 
 public class EnvManager : MonoBehaviour
 {
     [SerializeField] GameObject mainCamera;
     [SerializeField] GameObject altCamera;
     [SerializeField] Text AddressText;
+    [SerializeField] Text StatsText;
+    [SerializeField] Text ElapsedTimeText;
+    [SerializeField] GameObject Timer;
+    [SerializeField] GameObject EndMenu;
     [SerializeField] AudioClip padlockOpenSFX;
     [SerializeField] AudioClip cabinetOpenSFX;
     [SerializeField] AudioClip safeClickSFX;
@@ -19,23 +25,29 @@ public class EnvManager : MonoBehaviour
     [SerializeField] AudioClip winSFX;
     [SerializeField] AudioClip gameMusic;
     public string localIP;
+    public List<string> completors;
+    int timeElapsed;
     Animator animator1;
     Animator animator2;
     AudioSource audio;
-    // Start is called before the first frame update
+
     void Start()
     {
         IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
         IPAddress ipAddress = ipHostInfo.AddressList
-            .FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
+            .LastOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
         localIP = ipAddress.ToString();
 
         AddressText.text = "http://" + localIP + ":8080";
 
+        completors = new List<string>();
+        completors.Add("Test1");
+        completors.Add("Test2");
+
         audio = GetComponent<AudioSource>();
     }
 
-    private void Update()
+    void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -53,6 +65,8 @@ public class EnvManager : MonoBehaviour
 
     public void Begin()
     {
+        InvokeRepeating("UpdateTimer", 0, 1.0f);
+        Timer.SetActive(true);
         audio.clip = gameMusic;
         audio.Play();
     }
@@ -116,8 +130,19 @@ public class EnvManager : MonoBehaviour
         End();
     }
 
+    void UpdateTimer()
+    {
+        timeElapsed++;
+        ElapsedTimeText.text = TimeSpan.FromSeconds(timeElapsed).ToString("mm\\:ss");
+    }
+
     void End()
     {
-        GameObject.Find("EndMenu").SetActive(true);
+        CancelInvoke();
+        StatsText.text = "Your total elapsed time was: " + TimeSpan.FromSeconds(timeElapsed).ToString("mm\\:ss") + "\n" +
+            "Puzzle 1 was solved by: " + completors[0] + "\n" +
+            "Puzzle 2 was solved by: " + completors[1];
+        EndMenu.SetActive(true);
+        Timer.SetActive(false);
     }
 }

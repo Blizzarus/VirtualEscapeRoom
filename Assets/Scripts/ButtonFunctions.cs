@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ButtonFunctions : MonoBehaviour
 {
@@ -33,8 +34,10 @@ public class ButtonFunctions : MonoBehaviour
                 Application.OpenURL("https://1drv.ms/w/s!Anys2q_0RMamg4N6Tj9zgKf2AGT5fQ?e=6H1RaY");
                 break;
             case "RestartButton":
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 break;
             case "EndButton":
+                Application.Quit();
                 break;
             default:
                 Debug.LogWarning("Button case not found");

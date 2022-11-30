@@ -10,14 +10,12 @@ public class GameManager : MonoBehaviour
     EnvManager environment;
     SocketIOUnity socket;
     public string gamestate;
-    public List<string> completors;
 
     void Start()
     {
         environment = GameObject.Find("EnvManager").GetComponent<EnvManager>();
-        completors = new List<string>();
-        gamestate = "puzzle1";
         setupSocketIOClient();
+        gamestate = "waiting";
     }
 
     void setupSocketIOClient()
@@ -110,7 +108,7 @@ public class GameManager : MonoBehaviour
                 if (code == "test")
                 {
                     updateGS("puzzle2");
-                    completors.Add(player);
+                    environment.completors.Insert(0, player);
                     return "Success!  The lock opened!";
                 }
                 else
@@ -122,7 +120,7 @@ public class GameManager : MonoBehaviour
                 if (code == "123456")
                 {
                     updateGS("escape");
-                    completors.Add(player);
+                    environment.completors.Insert(1, player);
                     return "Success!  The safe opened!";
                 }
                 else
