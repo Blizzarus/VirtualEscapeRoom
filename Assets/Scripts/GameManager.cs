@@ -20,14 +20,14 @@ public class GameManager : MonoBehaviour
 
     void setupSocketIOClient()
     {
-        var uri = new Uri("http://localhost:8080");
+        var uri = new Uri("http://localhost:4000");
         socket = new SocketIOUnity(uri, new SocketIOOptions
         {
-            Query = new Dictionary<string, string>
-        {
-            {"token", "UNITY" }
-        }
-            ,
+        //     Query = new Dictionary<string, string>
+        // {
+        //     {"token", "UNITY" }
+        // }
+        //     ,
             Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
         });
 
