@@ -14,12 +14,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         environment = GameObject.Find("EnvManager").GetComponent<EnvManager>();
-        setupSocketIOClient();
-        gamestate = "waiting";
-    }
-
-    void setupSocketIOClient()
-    {
         var uri = new Uri("http://localhost:4000");
         socket = new SocketIOUnity(uri, new SocketIOOptions
         {
@@ -54,8 +48,8 @@ public class GameManager : MonoBehaviour
 
         socket.On("requestGameState", (data) =>
         {
-            Debug.Log("Recieved gamestate request");
-            socket.Emit("requestGameState", gamestate);
+            Debug.Log("Recieved gamestate request from: " + data);
+            socket.Emit("updateGameState", gamestate); //changed event name here
         });
 
         socket.On("solveEvent", (data) =>
@@ -68,6 +62,12 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Attmepting to connect...");
         socket.Connect();
+        gamestate = "waiting";
+    }
+
+    void setupSocketIOClient()
+    { //moved this all to start(), was not connecting here
+        
     }
 
     public void updateGS(string newGS)
