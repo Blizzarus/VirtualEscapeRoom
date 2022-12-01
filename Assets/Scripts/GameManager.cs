@@ -14,15 +14,16 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         environment = GameObject.Find("EnvManager").GetComponent<EnvManager>();
+        gamestate = "waiting";
+
         var uri = new Uri("http://localhost:4000");
         socket = new SocketIOUnity(uri, new SocketIOOptions
         {
-        //     Query = new Dictionary<string, string>
-        // {
-        //     {"token", "UNITY" }
-        // }
-        //     ,
-            Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
+        /*Query = new Dictionary<string, string>
+        {
+            {"token", "UNITY" }
+        },*/
+        Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
         });
 
         socket.OnConnected += (sender, e) =>
@@ -62,12 +63,6 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Attmepting to connect...");
         socket.Connect();
-        gamestate = "waiting";
-    }
-
-    void setupSocketIOClient()
-    { //moved this all to start(), was not connecting here
-        
     }
 
     public void updateGS(string newGS)
@@ -99,13 +94,13 @@ public class GameManager : MonoBehaviour
         string[] splitData = Regex.Split(Regex.Replace(data.ToString(), "[][\"]", ""), "::");
         string player = splitData[0];
         string puzzleNumber = splitData[1];
-        string code = splitData[2];
+        string code = splitData[2].ToLower();
         Debug.Log(code);
         switch (puzzleNumber)
         {
             case "1":
                 if (gamestate != "puzzle1") { return "Invalid puzzle attmepted.  How did you do that?!"; }
-                if (code == "test")
+                if (code == "escape")
                 {
                     updateGS("puzzle2");
                     environment.completors.Insert(0, player);
@@ -117,7 +112,7 @@ public class GameManager : MonoBehaviour
                 }
             case "2":
                 if (gamestate != "puzzle2") { return "Invalid puzzle attmepted.  How did you do that?!"; }
-                if (code == "123456")
+                if (code == "035131")
                 {
                     updateGS("escape");
                     environment.completors.Insert(1, player);

@@ -47,7 +47,7 @@ public class EnvManager : MonoBehaviour
         audio = GetComponent<AudioSource>();
     }
 
-    void Update()
+    /*void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -61,7 +61,7 @@ public class EnvManager : MonoBehaviour
         {
             StartCoroutine("DoorFX");
         }
-    }
+    }*/
 
     public void Begin()
     {
@@ -121,6 +121,7 @@ public class EnvManager : MonoBehaviour
         animator1 = GameObject.Find("Inner_Door").GetComponent<Animator>();
         animator1.SetTrigger("OpenDoor");
         audio.Stop();
+        CancelInvoke();
         audio.PlayOneShot(padlockOpenSFX);
         yield return new WaitForSeconds(3.5f);
         audio.PlayOneShot(cabinetOpenSFX);
@@ -138,7 +139,6 @@ public class EnvManager : MonoBehaviour
 
     void End()
     {
-        CancelInvoke();
         StatsText.text = "Your total elapsed time was: " + TimeSpan.FromSeconds(timeElapsed).ToString("mm\\:ss") + "\n" +
             "Puzzle 1 was solved by: " + completors[0] + "\n" +
             "Puzzle 2 was solved by: " + completors[1];
