@@ -12,6 +12,8 @@ public class EnvManager : MonoBehaviour
 {
     [SerializeField] GameObject mainCamera;
     [SerializeField] GameObject altCamera;
+    [SerializeField] GameObject outside;
+    [SerializeField] GameObject pointLights;
     [SerializeField] Text AddressText;
     [SerializeField] Text StatsText;
     [SerializeField] Text ElapsedTimeText;
@@ -123,7 +125,9 @@ public class EnvManager : MonoBehaviour
         audio.Stop();
         CancelInvoke();
         audio.PlayOneShot(padlockOpenSFX);
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(3.75f);
+        outside.SetActive(true);
+        pointLights.SetActive(false);
         audio.PlayOneShot(cabinetOpenSFX);
         yield return new WaitForSeconds(2.25f);
         audio.PlayOneShot(winSFX);
