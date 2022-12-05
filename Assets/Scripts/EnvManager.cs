@@ -49,7 +49,7 @@ public class EnvManager : MonoBehaviour
         audio = GetComponent<AudioSource>();
     }
 
-    /*void Update()
+    void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -63,7 +63,7 @@ public class EnvManager : MonoBehaviour
         {
             StartCoroutine("DoorFX");
         }
-    }*/
+    }
 
     public void Begin()
     {
@@ -126,10 +126,12 @@ public class EnvManager : MonoBehaviour
         CancelInvoke();
         audio.PlayOneShot(padlockOpenSFX);
         yield return new WaitForSeconds(3.75f);
-        outside.SetActive(true);
-        pointLights.SetActive(false);
         audio.PlayOneShot(cabinetOpenSFX);
-        yield return new WaitForSeconds(2.25f);
+        yield return new WaitForSeconds(0.25f);
+        outside.SetActive(true);
+        mainCamera.GetComponent<Crepuscular>().enabled = true;
+        pointLights.SetActive(false);
+        yield return new WaitForSeconds(2);
         audio.PlayOneShot(winSFX);
         yield return new WaitForSeconds(5);
         End();
