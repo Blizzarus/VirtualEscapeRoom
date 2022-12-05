@@ -49,15 +49,34 @@ public class GameManager : MonoBehaviour
 
         socket.On("requestGameState", (data) =>
         {
-            Debug.Log("Recieved gamestate request from: " + data);
+            Debug.Log("Received gamestate request from: " + data);
             socket.Emit("updateGameState", gamestate); //changed event name here
         });
 
         socket.On("solveEvent", (data) =>
         {
-            Debug.Log("Recieved solve attempt: " + data.ToString());
+            Debug.Log("Received solve attempt: " + data.ToString());
             string solveResult = solveAttempt(data);
-            socket.Emit("solveEvent", solveResult);
+            Debug.Log(solveResult);
+            string[] splitData = Regex.Split(Regex.Replace(solveResult.ToString(), "[][\"]", ""), "::");
+            string resCode = splitData[0];
+            string puzzleNumber = splitData[1];
+            string message = splitData[2];
+            socket.Emit("solveEvent", resCode + "::" + message);
+            if (resCode == "VAL") {
+                switch (puzzleNumber)
+                {
+                    case "1":
+                        updateGS("puzzle2");
+                        break;
+                    case "2":
+                        updateGS("escape");
+                        break;
+                    case "3":
+                        updateGS("completed");
+                        break;
+                }
+            }
         });
 
 
@@ -95,40 +114,39 @@ public class GameManager : MonoBehaviour
         string player = splitData[0];
         string puzzleNumber = splitData[1];
         string code = splitData[2].ToLower();
-        Debug.Log(code);
         switch (puzzleNumber)
         {
             case "1":
-                if (gamestate != "puzzle1") { return "Invalid puzzle attmepted.  How did you do that?!"; }
+                if (gamestate != "puzzle1") { return "ERR::1::Invalid puzzle attempted.  How did you do that?!"; }
                 if (code == "escape")
                 {
-                    updateGS("puzzle2");
+                    // updateGS("puzzle2");
                     environment.completors.Insert(0, player);
-                    return "Success!  The lock opened!";
+                    return "VAL::1::Success!  The lock opened!";
                 }
                 else
                 {
-                    return "The lock won't open.  Looks like that code wasn't right...";
+                    return "ERR::1::The lock won't open.  Looks like that code wasn't right...";
                 }
             case "2":
-                if (gamestate != "puzzle2") { return "Invalid puzzle attmepted.  How did you do that?!"; }
+                if (gamestate != "puzzle2") { return "ERR::2::Invalid puzzle attempted.  How did you do that?!"; }
                 if (code == "035131")
                 {
-                    updateGS("escape");
+                    // updateGS("escape");
                     environment.completors.Insert(1, player);
-                    return "Success!  The safe opened!";
+                    return "VAL::2::Success!  The safe opened!";
                 }
                 else
                 {
-                    return "The safe won't open.  Looks like that code wasn't right...";
+                    return "ERR::2::The safe won't open.  Looks like that code wasn't right...";
                 }
             case "3":
-                if (gamestate != "escape") { return "Escape trigged early.  How did you do that?!"; }
-                updateGS("completed");
-                return "The key worked!  You have escaped!";
+                if (gamestate != "escape") { return "ERR::3::Escape trigged early.  How did you do that?!"; }
+                // updateGS("completed");
+                return "VAL::3::The key worked!  You have escaped!";
             default:
                 Debug.Log("Error: invalid puzzle number");
-                return "Error: invalid puzzle number";
+                return "ERR::" + puzzleNumber + "::Error: invalid puzzle number";
         }
     }
 }
