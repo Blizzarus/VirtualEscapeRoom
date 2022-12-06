@@ -72,9 +72,9 @@ public class GameManager : MonoBehaviour
 
         socket.OnUnityThread("solveEvent", (data) =>
         {
-            //Debug.Log("Received solve attempt: " + data.ToString());
+            Debug.Log("Received solve attempt: " + data.ToString());
             string solveResult = solveAttempt(data);
-            //Debug.Log(solveResult);
+            Debug.Log("Result = " + solveResult);
             string[] splitData = Regex.Split(solveResult.ToString(), "::");
             string resCode = splitData[0];
             string puzzleNumber = splitData[1];
@@ -99,6 +99,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Attmepting to connect...");
         socket.Connect();
+    }
+    public void DCSocket()
+    {
+        socket.Disconnect();
     }
 
     public void updateGS(string newGS)
@@ -131,11 +135,11 @@ public class GameManager : MonoBehaviour
         string player = splitData[0];
         string puzzleNumber = splitData[1];
         string code = splitData[2].ToLower();
-        Debug.Log(player + " - " + puzzleNumber + " - " + code);
         switch (puzzleNumber)
         {
             case "1":
                 if (gamestate != "puzzle1") { return "ERR::1::Invalid puzzle attempted.  How did you do that?!"; }
+                //if (code == "test")
                 if (code == "escape")
                 {
                     environment.completors.Insert(0, player);
@@ -147,6 +151,7 @@ public class GameManager : MonoBehaviour
                 }
             case "2":
                 if (gamestate != "puzzle2") { return "ERR::2::Invalid puzzle attempted.  How did you do that?!"; }
+                //if (code == "test2")
                 if (code == "035131")
                 {
                     environment.completors.Insert(1, player);

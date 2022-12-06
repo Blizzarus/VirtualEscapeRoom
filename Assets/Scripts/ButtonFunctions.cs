@@ -37,6 +37,7 @@ public class ButtonFunctions : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 break;
             case "EndButton":
+                gameManager.DCSocket();
                 Application.Quit();
                 break;
             default:

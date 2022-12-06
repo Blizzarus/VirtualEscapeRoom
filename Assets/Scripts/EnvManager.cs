@@ -32,7 +32,7 @@ public class EnvManager : MonoBehaviour
             (a => a.AddressFamily == AddressFamily.InterNetwork);
         localIP = ipAddress.ToString();
 
-        AddressText.text = "http://" + localIP + ":8080";
+        AddressText.text = "http://" + localIP + ":3000";
 
         completors = new List<string>();
         completors.Add("Test1");
