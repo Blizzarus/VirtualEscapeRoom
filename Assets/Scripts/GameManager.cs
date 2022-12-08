@@ -2,6 +2,7 @@ using SocketIOClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -27,6 +28,18 @@ public class GameManager : MonoBehaviour
             updateGS("completed");
         }
     }*/
+
+    void Awake()
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(Application.dataPath + "/virtualescaperoom-web.exe");
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e.Message);
+        }
+    }
 
     void Start()
     {
