@@ -29,18 +29,6 @@ public class GameManager : MonoBehaviour
         }
     }*/
 
-    void Awake()
-    {
-        try
-        {
-            System.Diagnostics.Process.Start(Application.dataPath + "/virtualescaperoom-web.exe");
-        }
-        catch(Exception e)
-        {
-            Debug.Log(e.Message);
-        }
-    }
-
     void Start()
     {
         environment = GameObject.Find("EnvManager").GetComponent<EnvManager>();
